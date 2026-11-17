@@ -1,0 +1,159 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "cap0040-signed-payload-signer-added",
+  "title": "SetOptions adds an ed25519 signed-payload signer (P… strkey)",
+  "description": "A real testnet ledger in which a SetOptions operation adds a CAP-0040 signed-payload signer with a 3-byte payload (deadbe). The signer key is 40 bytes on the wire (32-byte ed25519 key, 4-byte length, payload padded to 4), not 32, and is not an account. This is the ledger wallet-backend#729 names as halting ingestion.",
+  "status": "active",
+  "kind": "ledger",
+  "synthetic": false,
+  "added": "2026-11-17",
+  "coverage": {
+    "caps": [
+      "CAP-0040"
+    ],
+    "protocol": {
+      "min": 19
+    },
+    "shapes": [
+      {
+        "path": "SignerKey.ed25519SignedPayload",
+        "coreValidation": "to-verify",
+        "note": "XDR bounds the payload to 64 bytes; whether core also rejects an empty payload in SetOptions is to be confirmed for the guide."
+      },
+      {
+        "path": "SetOptionsOp.signer",
+        "coreValidation": "partially-validated"
+      },
+      {
+        "path": "AccountEntry.signers",
+        "coreValidation": "core-produced"
+      }
+    ],
+    "rootCauses": [
+      "address-width"
+    ]
+  },
+  "provenance": {
+    "source": "network",
+    "network": "testnet",
+    "networkPassphrase": "Test SDF Network ; September 2015",
+    "networkEpoch": "2025-12-18",
+    "ledgerSequence": 4437357,
+    "txHash": "d9f78749cd01297cd5f22c7f2c798c9eec93d56f399e1c4cc2f8977ca52b9fed",
+    "retrievedFrom": "https://aws-public-blockchain.s3.us-east-2.amazonaws.com/v1.1/stellar/ledgers/testnet/2025-12-18/FFBC9DFF--4416000-4479999/FFBC4A92--4437357.xdr.zst",
+    "retrievedAt": "2026-11-17",
+    "containerSha256": "e9fe329be8a0c0a035db0dcbf0a5a01fdb99b9b14237cdc1a9fddae8a56c1846"
+  },
+  "payloads": [
+    {
+      "name": "ledger",
+      "role": "primary",
+      "xdrType": "LedgerCloseMeta",
+      "file": "ledger.xdr",
+      "sha256": "582e694b96bf69f894763909a1b058c1a2523d5634f2e0947393cee9765f4e0e",
+      "bytes": 58256
+    }
+  ],
+  "ledger": {
+    "sequence": 4437357,
+    "protocolVersion": 28,
+    "closeTime": 1788210372,
+    "hash": "0984e28878f8b074c3710f52630f5b6bc5a369bf61a15e7364b6123edf1881b6",
+    "networkPassphrase": "Test SDF Network ; September 2015",
+    "lcmVersion": 2
+  },
+  "focus": {
+    "txIndex": 0,
+    "txHash": "d9f78749cd01297cd5f22c7f2c798c9eec93d56f399e1c4cc2f8977ca52b9fed",
+    "opIndex": 0
+  },
+  "expect": {
+    "roundTrip": {
+      "reference": "rs-stellar-xdr",
+      "version": "30.0.0"
+    },
+    "decoded": [
+      {
+        "pointer": "/v2/ledger_header/header/ledger_seq",
+        "equals": 4437357
+      },
+      {
+        "pointer": "/v2/tx_processing",
+        "length": 12
+      },
+      {
+        "pointer": "/v2/tx_processing/0/result/transaction_hash",
+        "equals": "d9f78749cd01297cd5f22c7f2c798c9eec93d56f399e1c4cc2f8977ca52b9fed"
+      },
+      {
+        "pointer": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/body/set_options/signer/key",
+        "equals": "PBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSAAAAAAB55LN6AANMS",
+        "why": "The envelope asks for a signed-payload signer."
+      },
+      {
+        "pointer": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes/1/updated/data/account/signers",
+        "length": 1
+      },
+      {
+        "pointer": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes/1/updated/data/account/signers/0/key",
+        "equals": "PBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSAAAAAAB55LN6AANMS",
+        "why": "The meta shows core stored it. A reader must keep the full key, not a 32-byte prefix."
+      },
+      {
+        "pointer": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes/1/updated/data/account/num_sub_entries",
+        "equals": 1
+      }
+    ],
+    "participants": {
+      "addresses": [
+        "GBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSBB7B"
+      ],
+      "envelopeOnly": [
+        "PBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSAAAAAAB55LN6AANMS"
+      ]
+    },
+    "ledgerChanges": [
+      {
+        "opIndex": 0,
+        "entryType": "account",
+        "change": "updated",
+        "key": {
+          "account": {
+            "account_id": "GBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSBB7B"
+          }
+        }
+      }
+    ]
+  },
+  "sightings": [
+    {
+      "url": "https://github.com/stellar/wallet-backend/pull/729",
+      "component": "stellar/wallet-backend",
+      "relation": "reproduces",
+      "failure": "halt",
+      "preFix": {
+        "ref": "e2436eef697f",
+        "verdict": "mishandled"
+      },
+      "postFix": {
+        "ref": "2c873353c1f0",
+        "verdict": "pass"
+      }
+    },
+    {
+      "url": "https://github.com/stellar/wallet-backend/issues/716",
+      "component": "stellar/wallet-backend",
+      "relation": "reproduces",
+      "failure": "wrong-value",
+      "preFix": {
+        "ref": "79ea2acd1dc6",
+        "verdict": "mishandled"
+      },
+      "postFix": {
+        "ref": "2c873353c1f0",
+        "verdict": "pass"
+      }
+    }
+  ],
+  "notes": "The payload is the single LedgerCloseMeta cut from the data lake's LedgerCloseMetaBatch (the 12-byte batch header removed). The signer's ed25519 key is the source account's own key, so the P… and G… strkeys share a prefix. Both verdicts were measured on 2026-11-17 by replaying this payload into the wallet-backend ingest binary built at each ref (repro/README.md): the pre-fix binary fails five persist attempts and exits with the cursor at 4437356; the post-fix binary ingests the ledger and stores the 41-byte signer key. The #716 verdicts were measured the same day: at 79ea2acd1dc6, the commit the issue was filed against, the ledger is ingested and the signer is stored as 33 bytes (the P version byte and the ed25519 key; length and payload dropped), a row that reads back as a strkey that does not decode. Only the signed-payload producer of #716 is covered by this entry."
+}

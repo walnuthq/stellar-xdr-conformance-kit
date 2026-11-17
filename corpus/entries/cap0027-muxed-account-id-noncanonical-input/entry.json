@@ -1,0 +1,147 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "cap0027-muxed-account-id-noncanonical-input",
+  "title": "Muxed account with ID 16, and ID strings that parse to 16 without being \"16\"",
+  "description": "A MuxedAccount (M… address) with the 64-bit ID 16. The ID has one canonical text form, the decimal string \"16\". An SDK that parses ID strings loosely accepts \"0x10\" or \" 16 \" for the same account and then reports the ID as typed, so two objects for one M… address disagree about its ID; an empty string silently becomes ID 0.",
+  "status": "active",
+  "kind": "value",
+  "synthetic": true,
+  "added": "2026-11-17",
+  "coverage": {
+    "caps": [
+      "CAP-0027"
+    ],
+    "protocol": {
+      "min": 13
+    },
+    "shapes": [
+      {
+        "path": "MuxedAccount.med25519",
+        "coreValidation": "unvalidated",
+        "note": "Core does not interpret the id field; it is passed through. To be confirmed against core source for the guide."
+      }
+    ],
+    "rootCauses": [
+      "integer-domain",
+      "encode-decode-asymmetry",
+      "unvalidated-passthrough"
+    ]
+  },
+  "provenance": {
+    "source": "synthetic",
+    "method": "Encoded from XDR-JSON (the M… strkey) with the stellar-xdr CLI. The ed25519 key is the public key of the seed sha256(\"xdr-corpus issuer 0\").",
+    "generator": {
+      "path": "generator/recipes/cap0027-muxed-account-id-noncanonical-input.json",
+      "command": "stellar-xdr encode --type MuxedAccount --input json --output single < generator/recipes/cap0027-muxed-account-id-noncanonical-input.json"
+    },
+    "coreCanEmit": "yes",
+    "rationale": "Hand-built because it is a bare MuxedAccount. Any transaction or payment may name a muxed account with any 64-bit ID since protocol 13 (CAP-0027)."
+  },
+  "payloads": [
+    {
+      "name": "value",
+      "role": "primary",
+      "xdrType": "MuxedAccount",
+      "file": "value.xdr",
+      "sha256": "07a97219a8a340f1f50ae3fa96135af6f6b20863711b4293d338ffd9b3ebb1fe",
+      "bytes": 44
+    }
+  ],
+  "expect": {
+    "roundTrip": {
+      "reference": "rs-stellar-xdr",
+      "version": "30.0.0"
+    },
+    "decoded": [
+      {
+        "pointer": "",
+        "equals": "MBQWPFNFE4NDD7FHGGYQIU7DMYBTHCIK2AAJJJKBMB2WPWG6PZVJGAAAAAAAAAAACBP7M"
+      }
+    ],
+    "operations": [
+      {
+        "op": "muxed-id-parse",
+        "args": {
+          "id": "16"
+        },
+        "outcomes": [
+          {
+            "xdrHex": "000001000000000000000010616795a5271a31fca731b10453e3660333890ad00094a541607567d8de7e6a93"
+          }
+        ],
+        "why": "Control: the canonical ID string with the payload's base key gives the payload's bytes."
+      },
+      {
+        "op": "muxed-id-parse",
+        "args": {
+          "id": "0x10"
+        },
+        "outcomes": [
+          {
+            "error": true
+          }
+        ],
+        "why": "Hexadecimal is not a canonical ID."
+      },
+      {
+        "op": "muxed-id-parse",
+        "args": {
+          "id": " 16 "
+        },
+        "outcomes": [
+          {
+            "error": true
+          }
+        ],
+        "why": "Surrounding whitespace is not part of an ID."
+      },
+      {
+        "op": "muxed-id-parse",
+        "args": {
+          "id": ""
+        },
+        "outcomes": [
+          {
+            "error": true
+          }
+        ],
+        "why": "An empty string is not ID 0."
+      },
+      {
+        "op": "muxed-id-parse",
+        "args": {
+          "id": "016"
+        },
+        "outcomes": [
+          {
+            "error": true
+          },
+          {
+            "invariant": {
+              "name": "id-string",
+              "equals": "16"
+            }
+          }
+        ],
+        "why": "A leading zero must be rejected or normalised; the object must not report \"016\" as its ID."
+      }
+    ]
+  },
+  "sightings": [
+    {
+      "url": "https://github.com/stellar/js-stellar-sdk/issues/1785",
+      "component": "stellar/js-stellar-sdk",
+      "relation": "reproduces",
+      "failure": "accepts-invalid",
+      "preFix": {
+        "ref": "v17.2.1",
+        "verdict": "diverged"
+      },
+      "postFix": {
+        "ref": "v17.3.0",
+        "verdict": "pass"
+      }
+    }
+  ],
+  "notes": "Both verdicts were measured on 2026-11-17 with the published npm packages (repro/README.md)."
+}

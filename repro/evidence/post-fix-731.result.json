@@ -1,0 +1,54 @@
+{
+  "entry": "cap0073-sac-trust-creates-trustline-signed-header",
+  "target": "stellar/wallet-backend",
+  "label": "post-fix-731",
+  "ledger": 44,
+  "verdict": "pass",
+  "ingestExit": "running",
+  "checks": [
+    {
+      "check": "ingested",
+      "verdict": "pass",
+      "cursorAfter": 44,
+      "ledger": 44
+    },
+    {
+      "check": "focus-tx",
+      "verdict": "pass",
+      "txHash": "eab3ffad35f024566020f85092cfccba8a11e496ef14d2625c8c8418322e5cfe"
+    },
+    {
+      "check": "participants",
+      "verdict": "pass",
+      "expected": [
+        "30a0664e092fd9d926a5932ee10ddd8cd761d0c2aa112642dea302799a19a7e692"
+      ],
+      "stored": [
+        "103d5f688a2c1dd099a6ed7b447ea30cb32b087a1ac177e9e33c01b5b91286792f",
+        "30a0664e092fd9d926a5932ee10ddd8cd761d0c2aa112642dea302799a19a7e692"
+      ],
+      "missing": [],
+      "malformed": [],
+      "extraValid": [
+        "103d5f688a2c1dd099a6ed7b447ea30cb32b087a1ac177e9e33c01b5b91286792f"
+      ]
+    },
+    {
+      "check": "ledger-change account updated",
+      "verdict": "not-mapped",
+      "account": "GCQGMTQJF7M5SJVFSMXOCDO5RTLWDUGCVIISMQW6UMBHTGQZU7TJEQG7",
+      "why": "the meta shows no signer added; other account changes are not mapped"
+    },
+    {
+      "check": "ledger-change trustline created",
+      "verdict": "pass",
+      "account": "GCQGMTQJF7M5SJVFSMXOCDO5RTLWDUGCVIISMQW6UMBHTGQZU7TJEQG7",
+      "expected": "TRUSTLINE/ADD state change",
+      "stored": [
+        "BALANCE/DEBIT",
+        "BALANCE_AUTHORIZATION/SET",
+        "TRUSTLINE/ADD"
+      ]
+    }
+  ]
+}

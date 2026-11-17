@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "cap0038-pool-assets-issuer-byte-order",
+  "title": "Pool-share asset whose two issuers sort one way as bytes and the other way as strkeys",
+  "description": "A ChangeTrustAsset for a constant-product liquidity pool over two assets with the same code USD. assetA's issuer key (61 67 …, GBQW…) is lower than assetB's (74 a1 …, GB2K…) as bytes, which is the order the protocol requires, but higher as G… text, because base32 digits 2-7 sort before letters in ASCII. An SDK that orders issuers by strkey text rejects this valid pair or computes the pool ID of the reversed pair.",
+  "status": "active",
+  "kind": "value",
+  "synthetic": true,
+  "added": "2026-11-17",
+  "coverage": {
+    "caps": [
+      "CAP-0038"
+    ],
+    "protocol": {
+      "min": 18
+    },
+    "shapes": [
+      {
+        "path": "LiquidityPoolConstantProductParameters.assetA",
+        "coreValidation": "validated",
+        "note": "Core requires assetA < assetB. To be confirmed against core source for the guide."
+      },
+      {
+        "path": "LiquidityPoolConstantProductParameters.assetB",
+        "coreValidation": "validated"
+      },
+      {
+        "path": "ChangeTrustAsset.liquidityPool",
+        "coreValidation": "validated"
+      }
+    ],
+    "rootCauses": [
+      "canonical-order"
+    ]
+  },
+  "provenance": {
+    "source": "synthetic",
+    "method": "Encoded from XDR-JSON with the stellar-xdr CLI. The issuers are the public keys of the ed25519 seeds sha256(\"xdr-corpus issuer 0\") and sha256(\"xdr-corpus issuer 10\"), the first pair found whose byte order and strkey order disagree.",
+    "generator": {
+      "path": "generator/recipes/cap0038-pool-assets-issuer-byte-order.json",
+      "command": "stellar-xdr encode --type ChangeTrustAsset --input json --output single < generator/recipes/cap0038-pool-assets-issuer-byte-order.json"
+    },
+    "coreCanEmit": "unverified",
+    "rationale": "Hand-built because it is a bare ChangeTrustAsset, the value a pool-share ChangeTrust operation carries. Both issuers are ordinary ed25519 public keys and the pair is in byte order, so we expect core to accept it; this has not been run against core. A local-core ledger entry with this ChangeTrust is planned."
+  },
+  "payloads": [
+    {
+      "name": "value",
+      "role": "primary",
+      "xdrType": "ChangeTrustAsset",
+      "file": "value.xdr",
+      "sha256": "cccff88e27785f22635aa69014c8ba3ce729a77606e73a602854678d47103a01",
+      "bytes": 100
+    }
+  ],
+  "expect": {
+    "roundTrip": {
+      "reference": "rs-stellar-xdr",
+      "version": "30.0.0"
+    },
+    "decoded": [
+      {
+        "pointer": "/pool_share/liquidity_pool_constant_product/asset_a/credit_alphanum4/issuer",
+        "equals": "GBQWPFNFE4NDD7FHGGYQIU7DMYBTHCIK2AAJJJKBMB2WPWG6PZVJG4XS"
+      },
+      {
+        "pointer": "/pool_share/liquidity_pool_constant_product/asset_b/credit_alphanum4/issuer",
+        "equals": "GB2KCBWG74Q3QLRQXEG7FDBHQLBPDSGXXNBNBKYQJOOEGNBRAAMEW2NF"
+      },
+      {
+        "pointer": "/pool_share/liquidity_pool_constant_product/fee",
+        "equals": 30
+      }
+    ],
+    "operations": [
+      {
+        "op": "liquidity-pool-build",
+        "outcomes": [
+          {
+            "xdrHex": "0000000300000000000000015553440000000000616795a5271a31fca731b10453e3660333890ad00094a541607567d8de7e6a9300000001555344000000000074a106c6ff21b82e30b90df28c2782c2f1c8d7bb42d0ab104b9c43343100184b0000001e"
+          }
+        ],
+        "why": "Building the pool-share asset from the payload's assetA, assetB and fee, in that order, must succeed and give the payload's bytes."
+      },
+      {
+        "op": "liquidity-pool-id",
+        "outcomes": [
+          {
+            "value": "5c2ee6fa9def9ce18945cf4e2f830cfb991fed429fa05c5562f70949b08a6bc7"
+          }
+        ],
+        "why": "The pool ID is the SHA-256 of the LiquidityPoolParameters XDR (the payload without its 4-byte discriminant)."
+      }
+    ]
+  },
+  "sightings": [
+    {
+      "url": "https://github.com/stellar/js-stellar-sdk/pull/1766",
+      "component": "stellar/js-stellar-sdk",
+      "relation": "reproduces",
+      "failure": "rejects-valid",
+      "preFix": {
+        "ref": "v17.2.0",
+        "verdict": "diverged"
+      },
+      "postFix": {
+        "ref": "v17.2.1",
+        "verdict": "pass"
+      }
+    }
+  ],
+  "notes": "Both verdicts were measured on 2026-11-17 with the published npm packages (repro/README.md)."
+}

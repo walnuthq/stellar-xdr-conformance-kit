@@ -1,0 +1,20 @@
+{
+  "source_account": null,
+  "body": {
+    "manage_buy_offer": {
+      "selling": "native",
+      "buying": {
+        "credit_alphanum4": {
+          "asset_code": "USD",
+          "issuer": "GBQWPFNFE4NDD7FHGGYQIU7DMYBTHCIK2AAJJJKBMB2WPWG6PZVJG4XS"
+        }
+      },
+      "buy_amount": "10000000",
+      "price": {
+        "n": 1,
+        "d": 1
+      },
+      "offer_id": "9007199254740993"
+    }
+  }
+}

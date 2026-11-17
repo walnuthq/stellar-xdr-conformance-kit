@@ -1,0 +1,27 @@
+{
+  "entry": "cap0038-pool-assets-issuer-byte-order",
+  "sdk": "@stellar/stellar-sdk",
+  "version": "17.2.1",
+  "node": "v26.13.1",
+  "verdict": "pass",
+  "checks": [
+    {
+      "check": "round-trip",
+      "verdict": "pass"
+    },
+    {
+      "check": "liquidity-pool-build",
+      "verdict": "pass",
+      "observed": {
+        "xdrHex": "0000000300000000000000015553440000000000616795a5271a31fca731b10453e3660333890ad00094a541607567d8de7e6a9300000001555344000000000074a106c6ff21b82e30b90df28c2782c2f1c8d7bb42d0ab104b9c43343100184b0000001e"
+      }
+    },
+    {
+      "check": "liquidity-pool-id",
+      "verdict": "pass",
+      "observed": {
+        "value": "5c2ee6fa9def9ce18945cf4e2f830cfb991fed429fa05c5562f70949b08a6bc7"
+      }
+    }
+  ]
+}

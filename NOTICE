@@ -1,0 +1,26 @@
+Stellar XDR Conformance Kit
+Copyright 2026 Walnut
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party material included in this repository:
+
+1. stellar-core golden ledger close meta
+   corpus/entries/cap0073-sac-trust-creates-trustline/ledger.xdr
+   corpus/entries/cap0073-sac-trust-creates-trustline-signed-header/ledger.xdr
+   Each file is one record copied byte for byte from
+   test-lcm-current/InvokeHostFunctionTests/4c437318f87437c5.xdr in
+   https://github.com/stellar/stellar-core (commits f2b91947fb20 and
+   09f7d11b5f1d respectively; the exact commit, path and record are in each
+   entry.json).
+   Copyright Stellar Development Foundation and contributors.
+   Licensed under the Apache License, Version 2.0.
+
+2. Stellar testnet ledger data
+   corpus/entries/cap0040-signed-payload-signer-added/ledger.xdr
+   One ledger (4437357) of the public Stellar testnet, retrieved from the
+   public Stellar data lake. The source URL is in entry.json.
+
+3. Excerpts of upstream log output
+   repro/evidence/*.ingest.log are the output of stellar/wallet-backend
+   binaries built from the commits named in repro/README.md.

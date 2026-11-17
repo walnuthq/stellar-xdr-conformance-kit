@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "cap0046-scmap-keys-host-order",
+  "title": "ScMap whose host key order differs from text order and from XDR byte order",
+  "description": "A valid SCV_MAP with six keys in the order the Soroban host requires: by ScVal type first, then by value. i32 -1 comes before i32 1 (two's complement bytes say the opposite), bytes 09 before bytes 0a (their decimal text forms \"9\" and \"10\" say the opposite), and string \"b\" before symbol \"a\" (their names say the opposite). An SDK that sorts map keys any other way builds a map the host rejects.",
+  "status": "active",
+  "kind": "value",
+  "synthetic": true,
+  "added": "2026-11-17",
+  "coverage": {
+    "caps": [
+      "CAP-0046"
+    ],
+    "protocol": {
+      "min": 20
+    },
+    "shapes": [
+      {
+        "path": "SCVal.map",
+        "coreValidation": "validated",
+        "note": "The host rejects a map whose keys are not sorted and unique in its own ordering. To be confirmed against host source for the guide."
+      },
+      {
+        "path": "SCMapEntry.key",
+        "coreValidation": "validated"
+      }
+    ],
+    "rootCauses": [
+      "canonical-order"
+    ]
+  },
+  "provenance": {
+    "source": "synthetic",
+    "method": "Encoded from XDR-JSON with the stellar-xdr CLI; the entries are written in host order by hand.",
+    "generator": {
+      "path": "generator/recipes/cap0046-scmap-keys-host-order.json",
+      "command": "stellar-xdr encode --type ScVal --input json --output single < generator/recipes/cap0046-scmap-keys-host-order.json"
+    },
+    "coreCanEmit": "yes",
+    "rationale": "Hand-built because it is a bare ScVal. The order follows the rule stated in js-stellar-sdk#1766 (ScVal type first, then value; integers as numbers, bytes/strings/symbols by raw bytes). That this exact map is accepted by the host has not been checked against a running host; a local-core companion entry carrying it as a contract argument is planned."
+  },
+  "payloads": [
+    {
+      "name": "value",
+      "role": "primary",
+      "xdrType": "ScVal",
+      "file": "value.xdr",
+      "sha256": "efbf06973904d00c08e1d7c2b06c28776cfd5f1c65af6647c0c0a7bc4dae8b89",
+      "bytes": 124
+    }
+  ],
+  "expect": {
+    "roundTrip": {
+      "reference": "rs-stellar-xdr",
+      "version": "30.0.0"
+    },
+    "decoded": [
+      {
+        "pointer": "/map",
+        "length": 6
+      },
+      {
+        "pointer": "/map/0/key",
+        "equals": {
+          "i32": -1
+        }
+      },
+      {
+        "pointer": "/map/1/key",
+        "equals": {
+          "i32": 1
+        }
+      },
+      {
+        "pointer": "/map/2/key",
+        "equals": {
+          "bytes": "09"
+        }
+      },
+      {
+        "pointer": "/map/3/key",
+        "equals": {
+          "bytes": "0a"
+        }
+      },
+      {
+        "pointer": "/map/4/key",
+        "equals": {
+          "string": "b"
+        }
+      },
+      {
+        "pointer": "/map/5/key",
+        "equals": {
+          "symbol": "a"
+        }
+      }
+    ],
+    "limits": {
+      "maxDepth": 2,
+      "maxVectorLength": 6
+    },
+    "operations": [
+      {
+        "op": "scval-map-sort",
+        "outcomes": [
+          {
+            "xdrHex": "00000011000000010000000600000004ffffffff0000000300000000000000040000000100000003000000010000000d000000010900000000000003000000020000000d000000010a00000000000003000000030000000e000000016200000000000003000000040000000f00000001610000000000000300000005"
+          }
+        ],
+        "why": "Given the payload's entries in reverse order, the SDK's map-sorting helper must return them in the payload's order."
+      }
+    ]
+  },
+  "sightings": [
+    {
+      "url": "https://github.com/stellar/js-stellar-sdk/pull/1766",
+      "component": "stellar/js-stellar-sdk",
+      "relation": "reproduces",
+      "failure": "wrong-value",
+      "preFix": {
+        "ref": "v17.2.0",
+        "verdict": "diverged"
+      },
+      "postFix": {
+        "ref": "v17.2.1",
+        "verdict": "pass"
+      }
+    }
+  ],
+  "notes": "Both verdicts were measured on 2026-11-17 with the published npm packages (repro/README.md)."
+}

@@ -1,0 +1,45 @@
+{
+  "entry": "cap0027-muxed-source-on-soroban-ttl-op",
+  "target": "stellar/wallet-backend",
+  "label": "muxed-source-pre716",
+  "ledger": 30,
+  "verdict": "mishandled",
+  "ingestExit": "running",
+  "checks": [
+    {
+      "check": "ingested",
+      "verdict": "pass",
+      "cursorAfter": 30,
+      "ledger": 30
+    },
+    {
+      "check": "focus-tx",
+      "verdict": "pass",
+      "txHash": "df9b1bfb767b3d5ec9860a025df4e992e9b16c699ae4017b99a0f2938f93b8b9"
+    },
+    {
+      "check": "participants",
+      "verdict": "mishandled",
+      "expected": [
+        "3078cd88baf44717fb42b027cc1e82c25ef64d8e2b3168bce15f4e66eabfae965f"
+      ],
+      "stored": [
+        "3078cd88baf44717fb42b027cc1e82c25ef64d8e2b3168bce15f4e66eabfae965f",
+        "6078cd88baf44717fb42b027cc1e82c25ef64d8e2b3168bce15f4e66eabfae965f"
+      ],
+      "missing": [],
+      "malformed": [
+        {
+          "key": "6078cd88baf44717fb42b027cc1e82c25ef64d8e2b3168bce15f4e66eabfae965f",
+          "why": "not an account or contract key; the first 32 key bytes of envelope-only MB4M3CF26RDRP62CWAT4YHUCYJPPMTMOFMYWRPHBL5HGN2V7V2LF6EJCCD2H32MBCWWQG"
+        }
+      ],
+      "extraValid": []
+    },
+    {
+      "check": "ledger-change ttl updated",
+      "verdict": "not-mapped",
+      "why": "this adapter has no wallet-backend row for this entry type"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+time="2026-11-17T17:32:26.612+01:00" level=info msg="📦 Git Commit: " pid=90995
+time="2026-11-17T17:32:26.612+01:00" level=info msg="📦 Version: 0.2.0" pid=90995
+time="2026-11-17T17:32:26.613+01:00" level=debug msg="Setting log level to: info" pid=90995
+time="2026-11-17T17:32:26.665+01:00" level=info msg="Set chunk interval \"1 day\" on transactions" pid=90995
+time="2026-11-17T17:32:26.667+01:00" level=info msg="Set chunk interval \"1 day\" on transactions_accounts" pid=90995
+time="2026-11-17T17:32:26.669+01:00" level=info msg="Set chunk interval \"1 day\" on operations" pid=90995
+time="2026-11-17T17:32:26.671+01:00" level=info msg="Set chunk interval \"1 day\" on operations_accounts" pid=90995
+time="2026-11-17T17:32:26.673+01:00" level=info msg="Set chunk interval \"1 day\" on state_changes" pid=90995
+time="2026-11-17T17:32:26.677+01:00" level=info msg="Using RPCLedgerBackend for ledger ingestion with buffer size 10" pid=90995
+time="2026-11-17T17:32:26.683+01:00" level=info msg="protocol SEP41 history production disabled; cursor not initialized" pid=90995
+time="2026-11-17T17:32:26.683+01:00" level=info msg="protocol SEP41 current-state production disabled; cursor not initialized" pid=90995
+time="2026-11-17T17:32:26.687+01:00" level=info msg="Starting ingestion from ledger: 44" pid=90995
+time="2026-11-17T17:32:26.688+01:00" level=warning msg="Error fetching ledger 44 (attempt 1/10): failed to unmarshal cached ledger: decoding LedgerCloseMetaV2: decoding LedgerHeaderHistoryEntry: decoding LedgerHeader: decoding StellarValue: decoding StellarValueExt: decoding StellarValueType: '3' is not a valid StellarValueType enum value, retrying in 1s..." pid=90995
+time="2026-11-17T17:32:27.689+01:00" level=warning msg="Error fetching ledger 44 (attempt 2/10): failed to unmarshal cached ledger: decoding LedgerCloseMetaV2: decoding LedgerHeaderHistoryEntry: decoding LedgerHeader: decoding StellarValue: decoding StellarValueExt: decoding StellarValueType: '3' is not a valid StellarValueType enum value, retrying in 2s..." pid=90995
+time="2026-11-17T17:32:29.689+01:00" level=warning msg="Error fetching ledger 44 (attempt 3/10): failed to unmarshal cached ledger: decoding LedgerCloseMetaV2: decoding LedgerHeaderHistoryEntry: decoding LedgerHeader: decoding StellarValue: decoding StellarValueExt: decoding StellarValueType: '3' is not a valid StellarValueType enum value, retrying in 4s..." pid=90995
+time="2026-11-17T17:32:33.689+01:00" level=warning msg="Error fetching ledger 44 (attempt 4/10): failed to unmarshal cached ledger: decoding LedgerCloseMetaV2: decoding LedgerHeaderHistoryEntry: decoding LedgerHeader: decoding StellarValue: decoding StellarValueExt: decoding StellarValueType: '3' is not a valid StellarValueType enum value, retrying in 8s..." pid=90995
+time="2026-11-17T17:32:38.817+01:00" level=info msg="shutdown requested; exiting cleanly: fetching ledger 44: context cancelled during backoff: context canceled" pid=90995
+time="2026-11-17T17:32:38.817+01:00" level=info msg="Shutting down servers..." pid=90995
+time="2026-11-17T17:32:38.819+01:00" level=info msg="Servers gracefully stopped" pid=90995

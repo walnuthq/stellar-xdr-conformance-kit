@@ -1,0 +1,19 @@
+{
+  "pool_share": {
+    "liquidity_pool_constant_product": {
+      "asset_a": {
+        "credit_alphanum4": {
+          "asset_code": "USD",
+          "issuer": "GBQWPFNFE4NDD7FHGGYQIU7DMYBTHCIK2AAJJJKBMB2WPWG6PZVJG4XS"
+        }
+      },
+      "asset_b": {
+        "credit_alphanum4": {
+          "asset_code": "USD",
+          "issuer": "GB2KCBWG74Q3QLRQXEG7FDBHQLBPDSGXXNBNBKYQJOOEGNBRAAMEW2NF"
+        }
+      },
+      "fee": 30
+    }
+  }
+}

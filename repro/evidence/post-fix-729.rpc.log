@@ -1,0 +1,4 @@
+serving ledgers [4437357] on 127.0.0.1:18729
+rpc getHealth {}
+rpc getLedgers {"startLedger":4437357,"pagination":{"limit":10}}
+rpc getHealth {}

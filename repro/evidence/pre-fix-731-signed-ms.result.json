@@ -1,0 +1,16 @@
+{
+  "entry": "cap0073-sac-trust-creates-trustline",
+  "target": "stellar/wallet-backend",
+  "label": "pre-fix-731-signed-ms",
+  "ledger": 44,
+  "verdict": "mishandled",
+  "ingestExit": "running",
+  "checks": [
+    {
+      "check": "ingested",
+      "verdict": "mishandled",
+      "cursorAfter": 43,
+      "ledger": 44
+    }
+  ]
+}

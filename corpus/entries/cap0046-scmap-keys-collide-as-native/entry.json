@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "cap0046-scmap-keys-collide-as-native",
+  "title": "ScMap whose keys u32 1 and symbol \"1\" collide after native conversion",
+  "description": "A valid, host-ordered SCV_MAP with two entries whose keys have different ScVal types but the same printed form. Converting the map to a native dictionary keyed by strings loses one entry unless the SDK detects the collision.",
+  "status": "active",
+  "kind": "value",
+  "synthetic": true,
+  "added": "2026-11-17",
+  "coverage": {
+    "caps": [
+      "CAP-0046"
+    ],
+    "protocol": {
+      "min": 20
+    },
+    "shapes": [
+      {
+        "path": "SCVal.map",
+        "coreValidation": "partially-validated",
+        "note": "The host requires sorted, duplicate-free keys; it does not care how keys print."
+      },
+      {
+        "path": "SCMapEntry.key",
+        "coreValidation": "partially-validated"
+      }
+    ],
+    "rootCauses": [
+      "lossy-conversion"
+    ]
+  },
+  "provenance": {
+    "source": "synthetic",
+    "method": "Encoded from XDR-JSON with the stellar-xdr CLI.",
+    "generator": {
+      "path": "generator/recipes/cap0046-scmap-keys-collide-as-native.json",
+      "command": "stellar-xdr encode --type ScVal --input json --output single < generator/recipes/cap0046-scmap-keys-collide-as-native.json"
+    },
+    "coreCanEmit": "yes",
+    "rationale": "Hand-built because it is a bare ScVal, not ledger output. Keys are in host order (u32 before symbol), so any contract can return or emit this map; the js-stellar-sdk changelog for #1778 states the same. A ledger entry carrying it in a contract event is planned as a local-core companion."
+  },
+  "payloads": [
+    {
+      "name": "value",
+      "role": "primary",
+      "xdrType": "ScVal",
+      "file": "value.xdr",
+      "sha256": "90e0fb9b8958a1596f9efd2b25c51cefc96b3c67fdae20fb8df2bcfe8e9cd19e",
+      "bytes": 48
+    }
+  ],
+  "expect": {
+    "roundTrip": {
+      "reference": "rs-stellar-xdr",
+      "version": "30.0.0"
+    },
+    "decoded": [
+      {
+        "pointer": "/map",
+        "length": 2
+      },
+      {
+        "pointer": "/map/0/key",
+        "equals": {
+          "u32": 1
+        }
+      },
+      {
+        "pointer": "/map/0/val",
+        "equals": {
+          "u32": 10
+        }
+      },
+      {
+        "pointer": "/map/1/key",
+        "equals": {
+          "symbol": "1"
+        }
+      },
+      {
+        "pointer": "/map/1/val",
+        "equals": {
+          "u32": 20
+        }
+      }
+    ],
+    "limits": {
+      "maxDepth": 2,
+      "maxVectorLength": 2
+    },
+    "operations": [
+      {
+        "op": "scval-to-native",
+        "outcomes": [
+          {
+            "error": true
+          },
+          {
+            "invariant": {
+              "name": "entry-count",
+              "equals": 2
+            }
+          }
+        ],
+        "why": "The conversion must keep both entries or fail; it must not return one entry."
+      }
+    ]
+  },
+  "sightings": [
+    {
+      "url": "https://github.com/stellar/js-stellar-sdk/issues/1789",
+      "component": "stellar/js-stellar-sdk",
+      "relation": "reproduces",
+      "failure": "silent-drop",
+      "preFix": {
+        "ref": "v17.2.1",
+        "verdict": "diverged"
+      },
+      "postFix": {
+        "ref": "v17.3.0",
+        "verdict": "pass"
+      }
+    }
+  ],
+  "notes": "Same map as the reproduction in the issue. Both verdicts were measured on 2026-11-17 with the published npm packages (repro/README.md): v17.2.1 returns { \"1\": 20 }, one entry and no error; v17.3.0 throws."
+}

@@ -1,0 +1,22 @@
+time="2026-11-17T17:32:43.596+01:00" level=info msg="📦 Git Commit: " pid=91063
+time="2026-11-17T17:32:43.596+01:00" level=info msg="📦 Version: 0.2.0" pid=91063
+time="2026-11-17T17:32:43.596+01:00" level=debug msg="Setting log level to: info" pid=91063
+time="2026-11-17T17:32:43.637+01:00" level=info msg="Set chunk interval \"1 day\" on transactions" pid=91063
+time="2026-11-17T17:32:43.639+01:00" level=info msg="Set chunk interval \"1 day\" on transactions_accounts" pid=91063
+time="2026-11-17T17:32:43.642+01:00" level=info msg="Set chunk interval \"1 day\" on operations" pid=91063
+time="2026-11-17T17:32:43.645+01:00" level=info msg="Set chunk interval \"1 day\" on operations_accounts" pid=91063
+time="2026-11-17T17:32:43.647+01:00" level=info msg="Set chunk interval \"1 day\" on state_changes" pid=91063
+time="2026-11-17T17:32:43.654+01:00" level=info msg="Using RPCLedgerBackend for ledger ingestion with buffer size 10" pid=91063
+time="2026-11-17T17:32:43.660+01:00" level=info msg="protocol SEP41 history production disabled; cursor not initialized" pid=91063
+time="2026-11-17T17:32:43.660+01:00" level=info msg="protocol SEP41 current-state production disabled; cursor not initialized" pid=91063
+time="2026-11-17T17:32:43.665+01:00" level=info msg="Starting ingestion from ledger: 30" pid=91063
+time="2026-11-17T17:32:43.685+01:00" level=info msg="Shutting down servers..." pid=91063
+time="2026-11-17T17:32:43.685+01:00" level=info msg="Servers gracefully stopped" pid=91063
+
+  -h, --help                                   help for ingest
+panic: executing root command: running ingest: running 'ingest' from 0 to 0: processing ledger 30: ingesting processed data for ledger 30 failed with a permanent error: persisting ledger data for ledger 30: running atomic function in RunInTransaction: inserting processed data into db for ledger 30: batch inserting transactions: pgx CopyFrom transactions_accounts: ERROR: duplicate key value violates unique constraint "2_transactions_accounts_pkey" (SQLSTATE 23505)
+goroutine 1 [running]:
+github.com/stellar/wallet-backend/cmd.Execute({{0x0?, 0x10249593c?}, {0x103e510aa?, 0x140000021c0?}})
+	pre753/cmd/root.go:35 +0x78
+main.main()
+	pre753/main.go:15 +0x34

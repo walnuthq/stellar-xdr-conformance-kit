@@ -1,0 +1,17 @@
+time="2026-11-17T17:32:40.676+01:00" level=info msg="📦 Git Commit: " pid=91038
+time="2026-11-17T17:32:40.676+01:00" level=info msg="📦 Version: 0.2.0" pid=91038
+time="2026-11-17T17:32:40.676+01:00" level=debug msg="Setting log level to: info" pid=91038
+time="2026-11-17T17:32:40.725+01:00" level=info msg="Set chunk interval \"1 day\" on transactions" pid=91038
+time="2026-11-17T17:32:40.728+01:00" level=info msg="Set chunk interval \"1 day\" on transactions_accounts" pid=91038
+time="2026-11-17T17:32:40.730+01:00" level=info msg="Set chunk interval \"1 day\" on operations" pid=91038
+time="2026-11-17T17:32:40.732+01:00" level=info msg="Set chunk interval \"1 day\" on operations_accounts" pid=91038
+time="2026-11-17T17:32:40.734+01:00" level=info msg="Set chunk interval \"1 day\" on state_changes" pid=91038
+time="2026-11-17T17:32:40.740+01:00" level=info msg="Using RPCLedgerBackend for ledger ingestion with buffer size 10" pid=91038
+time="2026-11-17T17:32:40.748+01:00" level=info msg="protocol SEP41 history production disabled; cursor not initialized" pid=91038
+time="2026-11-17T17:32:40.748+01:00" level=info msg="protocol SEP41 current-state production disabled; cursor not initialized" pid=91038
+time="2026-11-17T17:32:40.754+01:00" level=info msg="Starting ingestion from ledger: 30" pid=91038
+time="2026-11-17T17:32:40.782+01:00" level=info msg="Ingested ledger 30 in 0.0266s" pid=91038
+time="2026-11-17T17:32:41.678+01:00" level=warning msg="Error fetching ledger 31 (attempt 1/10): context canceled, retrying in 1s..." pid=91038
+time="2026-11-17T17:32:41.679+01:00" level=info msg="shutdown requested; exiting cleanly: fetching ledger 31: context cancelled during backoff: context canceled" pid=91038
+time="2026-11-17T17:32:41.680+01:00" level=info msg="Shutting down servers..." pid=91038
+time="2026-11-17T17:32:41.680+01:00" level=info msg="Servers gracefully stopped" pid=91038

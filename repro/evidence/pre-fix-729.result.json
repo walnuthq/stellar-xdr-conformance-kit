@@ -1,0 +1,16 @@
+{
+  "entry": "cap0040-signed-payload-signer-added",
+  "target": "stellar/wallet-backend",
+  "label": "pre-fix-729",
+  "ledger": 4437357,
+  "verdict": "mishandled",
+  "ingestExit": "2",
+  "checks": [
+    {
+      "check": "ingested",
+      "verdict": "mishandled",
+      "cursorAfter": 4437356,
+      "ledger": 4437357
+    }
+  ]
+}

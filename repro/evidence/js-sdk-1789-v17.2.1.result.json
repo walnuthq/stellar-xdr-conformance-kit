@@ -1,0 +1,24 @@
+{
+  "entry": "cap0046-scmap-keys-collide-as-native",
+  "sdk": "@stellar/stellar-sdk",
+  "version": "17.2.1",
+  "node": "v26.13.1",
+  "verdict": "diverged",
+  "checks": [
+    {
+      "check": "round-trip",
+      "verdict": "pass"
+    },
+    {
+      "check": "scval-to-native",
+      "verdict": "diverged",
+      "observed": {
+        "shape": "object",
+        "entryCount": 1,
+        "value": {
+          "1": 20
+        }
+      }
+    }
+  ]
+}

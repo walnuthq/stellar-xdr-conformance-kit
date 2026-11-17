@@ -1,0 +1,27 @@
+{
+  "entry": "cap0038-pool-assets-issuer-byte-order",
+  "sdk": "@stellar/stellar-sdk",
+  "version": "17.2.0",
+  "node": "v26.13.1",
+  "verdict": "diverged",
+  "checks": [
+    {
+      "check": "round-trip",
+      "verdict": "pass"
+    },
+    {
+      "check": "liquidity-pool-build",
+      "verdict": "diverged",
+      "observed": {
+        "error": "Assets are not in lexicographic order"
+      }
+    },
+    {
+      "check": "liquidity-pool-id",
+      "verdict": "diverged",
+      "observed": {
+        "error": "Assets are not in lexicographic order"
+      }
+    }
+  ]
+}

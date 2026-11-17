@@ -1,0 +1,48 @@
+{
+  "entry": "cap0040-signed-payload-signer-added",
+  "target": "stellar/wallet-backend",
+  "label": "post-fix-716-signer",
+  "ledger": 4437357,
+  "verdict": "pass",
+  "ingestExit": "running",
+  "checks": [
+    {
+      "check": "ingested",
+      "verdict": "pass",
+      "cursorAfter": 4437357,
+      "ledger": 4437357
+    },
+    {
+      "check": "focus-tx",
+      "verdict": "pass",
+      "txHash": "d9f78749cd01297cd5f22c7f2c798c9eec93d56f399e1c4cc2f8977ca52b9fed"
+    },
+    {
+      "check": "participants",
+      "verdict": "pass",
+      "expected": [
+        "3044ad47185a30e91c245e8b0582b191e27d99fb40f9ff48ca0d7e1264ec879b20"
+      ],
+      "stored": [
+        "3044ad47185a30e91c245e8b0582b191e27d99fb40f9ff48ca0d7e1264ec879b20"
+      ],
+      "missing": [],
+      "malformed": [],
+      "extraValid": []
+    },
+    {
+      "check": "ledger-change account updated",
+      "verdict": "pass",
+      "account": "GBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSBB7B",
+      "signer": "PBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSAAAAAAB55LN6AANMS",
+      "expectedSignerKey": "7844ad47185a30e91c245e8b0582b191e27d99fb40f9ff48ca0d7e1264ec879b2000000003deadbe00",
+      "expectedBytes": 41,
+      "storedSignerKeys": [
+        "7844ad47185a30e91c245e8b0582b191e27d99fb40f9ff48ca0d7e1264ec879b2000000003deadbe00"
+      ],
+      "storedBytes": [
+        41
+      ]
+    }
+  ]
+}

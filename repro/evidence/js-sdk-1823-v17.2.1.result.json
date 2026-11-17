@@ -1,0 +1,20 @@
+{
+  "entry": "memo-text-non-utf8",
+  "sdk": "@stellar/stellar-sdk",
+  "version": "17.2.1",
+  "node": "v26.13.1",
+  "verdict": "diverged",
+  "checks": [
+    {
+      "check": "round-trip",
+      "verdict": "pass"
+    },
+    {
+      "check": "rebuild-from-native-string",
+      "verdict": "diverged",
+      "observed": {
+        "xdrHex": "0000000100000003efbfbd00"
+      }
+    }
+  ]
+}

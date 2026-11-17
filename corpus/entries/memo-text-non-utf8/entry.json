@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "memo-text-non-utf8",
+  "title": "MEMO_TEXT whose bytes are not valid UTF-8",
+  "description": "A text memo holding the single byte 0xff. XDR string<28> is a byte string and stellar-core does not require UTF-8, so a reader that decodes the memo into a native string and writes it back changes the bytes, and with them the transaction hash.",
+  "status": "active",
+  "kind": "value",
+  "synthetic": true,
+  "added": "2026-11-17",
+  "coverage": {
+    "caps": [],
+    "protocol": {
+      "min": 1
+    },
+    "shapes": [
+      {
+        "path": "Memo.text",
+        "coreValidation": "unvalidated",
+        "note": "Length is bounded by XDR (28 bytes); content is passed through. To be confirmed against core source for the guide."
+      }
+    ],
+    "rootCauses": [
+      "unvalidated-passthrough",
+      "lossy-conversion",
+      "encode-decode-asymmetry"
+    ]
+  },
+  "provenance": {
+    "source": "synthetic",
+    "method": "Written by hand: discriminant 1 (MEMO_TEXT), length 1, byte 0xff, three padding bytes.",
+    "coreCanEmit": "yes",
+    "rationale": "Hand-built because it is a bare Memo. js-stellar-sdk#1823 states that such bytes are valid on the network, and the RFP lists memos among the fields core passes through. A ledger entry with a transaction carrying this memo is planned as a local-core companion."
+  },
+  "payloads": [
+    {
+      "name": "value",
+      "role": "primary",
+      "xdrType": "Memo",
+      "file": "value.xdr",
+      "sha256": "6d6addd14c78c92f41037e906f6fb4bf3bc5fbcb0646d5aee433f748ac3f2810",
+      "bytes": 12
+    }
+  ],
+  "expect": {
+    "roundTrip": {
+      "reference": "rs-stellar-xdr",
+      "version": "30.0.0"
+    },
+    "decoded": [
+      {
+        "pointer": "/text",
+        "equals": "\\xff",
+        "why": "SEP-51 escapes the byte; it is not replaced by U+FFFD."
+      }
+    ],
+    "operations": [
+      {
+        "op": "rebuild-from-native-string",
+        "outcomes": [
+          {
+            "xdrHex": "0000000100000001ff000000"
+          },
+          {
+            "error": true
+          }
+        ],
+        "why": "Reading the memo as a native string and building a new memo from it must give the same bytes or fail. 0000000100000003efbfbd00 is the wrong answer."
+      }
+    ]
+  },
+  "sightings": [
+    {
+      "url": "https://github.com/stellar/js-stellar-sdk/issues/1823",
+      "component": "stellar/js-stellar-sdk",
+      "relation": "reproduces",
+      "failure": "wrong-value",
+      "preFix": {
+        "ref": "v17.2.1",
+        "verdict": "diverged"
+      },
+      "postFix": {
+        "ref": "v17.3.0",
+        "verdict": "diverged"
+      }
+    }
+  ],
+  "notes": "Bytes are the example from the issue. Both verdicts were measured on 2026-11-17 with the published npm packages (repro/README.md): reading the memo through the .value getter and rebuilding gives 0000000100000003efbfbd00 on v17.2.1 and on v17.3.0. The upstream fix (#1824) documents the getter as lossy and keeps the behaviour, so the post-fix verdict is still 'diverged': the entry records a documented hazard, not a regression."
+}

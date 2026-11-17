@@ -1,0 +1,168 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "cap0073-sac-trust-creates-trustline",
+  "title": "Stellar Asset Contract trust() creates a trustline with no ChangeTrust and no event",
+  "description": "An InvokeHostFunction operation calls trust(address) on a Stellar Asset Contract. The operation meta shows a created TrustLineEntry with limit INT64_MAX; the operation emits no contract event. A reader that keys trustline handling on ChangeTrust operations or on events sees nothing.",
+  "status": "active",
+  "kind": "ledger",
+  "synthetic": false,
+  "added": "2026-11-17",
+  "license": "Apache-2.0",
+  "coverage": {
+    "caps": [
+      "CAP-0073"
+    ],
+    "protocol": {
+      "min": 26
+    },
+    "shapes": [
+      {
+        "path": "LedgerEntryChange.created",
+        "coreValidation": "core-produced",
+        "note": "TrustLineEntry created under an InvokeHostFunctionOp."
+      },
+      {
+        "path": "TrustLineEntry.limit",
+        "coreValidation": "core-produced",
+        "note": "Always INT64_MAX for a SAC-created trustline."
+      },
+      {
+        "path": "OperationMetaV2.events",
+        "coreValidation": "core-produced",
+        "note": "Empty: trust() emits no event."
+      }
+    ],
+    "rootCauses": [
+      "meta-only-change",
+      "participants-from-envelope"
+    ]
+  },
+  "provenance": {
+    "source": "local-core",
+    "core": {
+      "commit": "f2b91947fb20fc8174cca38bf320eda7baa3edbb"
+    },
+    "protocolVersion": 30,
+    "networkPassphrase": "(V) (;,,;) (V)",
+    "golden": {
+      "repository": "https://github.com/stellar/stellar-core",
+      "commit": "f2b91947fb20fc8174cca38bf320eda7baa3edbb",
+      "path": "test-lcm-current/InvokeHostFunctionTests/4c437318f87437c5.xdr",
+      "fileSha256": "20624d6db29bb4546312a1aafcc72c978c1781b40b90a4828ab0dc7166fefeda",
+      "record": 43,
+      "section": "Trustline stellar asset contract|protocol version 30",
+      "rngSeed": 12345,
+      "relation": "copied"
+    }
+  },
+  "payloads": [
+    {
+      "name": "ledger",
+      "role": "primary",
+      "xdrType": "LedgerCloseMeta",
+      "file": "ledger.xdr",
+      "sha256": "2b42bca8d8daab59dbf5960e5c325301276e5088908847a85dd4051ef7a32066",
+      "bytes": 4504
+    }
+  ],
+  "ledger": {
+    "sequence": 44,
+    "protocolVersion": 30,
+    "closeTime": 1451692802,
+    "hash": "d98504ae5c4e3a7bd83ebc25fe02a410632c3304437fdd0bfb5046198e62ddd6",
+    "networkPassphrase": "(V) (;,,;) (V)",
+    "lcmVersion": 2
+  },
+  "focus": {
+    "txIndex": 0,
+    "txHash": "eab3ffad35f024566020f85092cfccba8a11e496ef14d2625c8c8418322e5cfe",
+    "opIndex": 0
+  },
+  "expect": {
+    "roundTrip": {
+      "reference": "rs-stellar-xdr",
+      "version": "30.0.0"
+    },
+    "decoded": [
+      {
+        "pointer": "/v2/ledger_header/header/ledger_version",
+        "equals": 30
+      },
+      {
+        "pointer": "/v2/tx_processing",
+        "length": 1
+      },
+      {
+        "pointer": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/function_name",
+        "equals": "trust"
+      },
+      {
+        "pointer": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "length": 3
+      },
+      {
+        "pointer": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes/2/created/data/trustline/account_id",
+        "equals": "GCQGMTQJF7M5SJVFSMXOCDO5RTLWDUGCVIISMQW6UMBHTGQZU7TJEQG7"
+      },
+      {
+        "pointer": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes/2/created/data/trustline/limit",
+        "equals": "9223372036854775807"
+      },
+      {
+        "pointer": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes/2/created/data/trustline/flags",
+        "equals": 1
+      },
+      {
+        "pointer": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "length": 0,
+        "why": "No contract event announces the trustline; only the meta does."
+      }
+    ],
+    "participants": {
+      "addresses": [
+        "GCQGMTQJF7M5SJVFSMXOCDO5RTLWDUGCVIISMQW6UMBHTGQZU7TJEQG7"
+      ]
+    },
+    "ledgerChanges": [
+      {
+        "opIndex": 0,
+        "entryType": "account",
+        "change": "updated",
+        "key": {
+          "account": {
+            "account_id": "GCQGMTQJF7M5SJVFSMXOCDO5RTLWDUGCVIISMQW6UMBHTGQZU7TJEQG7"
+          }
+        }
+      },
+      {
+        "opIndex": 0,
+        "entryType": "trustline",
+        "change": "created",
+        "key": {
+          "trustline": {
+            "account_id": "GCQGMTQJF7M5SJVFSMXOCDO5RTLWDUGCVIISMQW6UMBHTGQZU7TJEQG7",
+            "asset": {
+              "credit_alphanum4": {
+                "asset_code": "IDR",
+                "issuer": "GCGE27HU2VYQANKL2VZWLCAOJYMEFST5DXPBWQ7BRRPOHUPK626DNG4Q"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "sightings": [
+    {
+      "url": "https://github.com/stellar/wallet-backend/issues/731",
+      "component": "stellar/wallet-backend",
+      "relation": "covers"
+    },
+    {
+      "url": "https://github.com/stellar/stellar-etl/issues/460",
+      "component": "stellar/stellar-etl",
+      "relation": "covers"
+    }
+  ],
+  "notes": "Record 43 of a stellar-core --check-lcm golden file, copied byte for byte. Relation to wallet-backend#731 is 'covers', not 'reproduces': the header's StellarValue uses the protocol-30 SIGNED_MS arm (CAP-0088). Measured on 2026-11-17: wallet-backend at both the pre-fix commit 764a4f5bcbff and the fix c152783c054c (go-stellar-sdk v0.7.3) fails to decode it (\"'3' is not a valid StellarValueType enum value\") and does not advance. The reproduction of #731 uses the sibling entry cap0073-sac-trust-creates-trustline-signed-header, the same ledger from the previous recording of the golden."
+}

@@ -1,0 +1,39 @@
+{
+  "entry": "cap0027-muxed-source-on-soroban-ttl-op",
+  "target": "stellar/wallet-backend",
+  "label": "muxed-source-post753",
+  "ledger": 30,
+  "verdict": "pass",
+  "ingestExit": "running",
+  "checks": [
+    {
+      "check": "ingested",
+      "verdict": "pass",
+      "cursorAfter": 30,
+      "ledger": 30
+    },
+    {
+      "check": "focus-tx",
+      "verdict": "pass",
+      "txHash": "df9b1bfb767b3d5ec9860a025df4e992e9b16c699ae4017b99a0f2938f93b8b9"
+    },
+    {
+      "check": "participants",
+      "verdict": "pass",
+      "expected": [
+        "3078cd88baf44717fb42b027cc1e82c25ef64d8e2b3168bce15f4e66eabfae965f"
+      ],
+      "stored": [
+        "3078cd88baf44717fb42b027cc1e82c25ef64d8e2b3168bce15f4e66eabfae965f"
+      ],
+      "missing": [],
+      "malformed": [],
+      "extraValid": []
+    },
+    {
+      "check": "ledger-change ttl updated",
+      "verdict": "not-mapped",
+      "why": "this adapter has no wallet-backend row for this entry type"
+    }
+  ]
+}

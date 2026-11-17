@@ -1,0 +1,68 @@
+{
+  "entry": "cap0027-muxed-account-id-noncanonical-input",
+  "sdk": "@stellar/stellar-sdk",
+  "version": "17.2.1",
+  "node": "v26.13.1",
+  "verdict": "diverged",
+  "checks": [
+    {
+      "check": "round-trip",
+      "verdict": "pass"
+    },
+    {
+      "check": "muxed-id-parse",
+      "args": {
+        "id": "16"
+      },
+      "verdict": "pass",
+      "observed": {
+        "xdrHex": "000001000000000000000010616795a5271a31fca731b10453e3660333890ad00094a541607567d8de7e6a93",
+        "idString": "16"
+      }
+    },
+    {
+      "check": "muxed-id-parse",
+      "args": {
+        "id": "0x10"
+      },
+      "verdict": "diverged",
+      "observed": {
+        "xdrHex": "000001000000000000000010616795a5271a31fca731b10453e3660333890ad00094a541607567d8de7e6a93",
+        "idString": "0x10"
+      }
+    },
+    {
+      "check": "muxed-id-parse",
+      "args": {
+        "id": " 16 "
+      },
+      "verdict": "diverged",
+      "observed": {
+        "xdrHex": "000001000000000000000010616795a5271a31fca731b10453e3660333890ad00094a541607567d8de7e6a93",
+        "idString": " 16 "
+      }
+    },
+    {
+      "check": "muxed-id-parse",
+      "args": {
+        "id": ""
+      },
+      "verdict": "diverged",
+      "observed": {
+        "xdrHex": "000001000000000000000000616795a5271a31fca731b10453e3660333890ad00094a541607567d8de7e6a93",
+        "idString": ""
+      }
+    },
+    {
+      "check": "muxed-id-parse",
+      "args": {
+        "id": "016"
+      },
+      "verdict": "diverged",
+      "observed": {
+        "xdrHex": "000001000000000000000010616795a5271a31fca731b10453e3660333890ad00094a541607567d8de7e6a93",
+        "idString": "016"
+      }
+    }
+  ]
+}

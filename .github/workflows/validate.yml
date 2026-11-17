@@ -1,0 +1,37 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  corpus:
+    name: Corpus (schema, digests, round trip, recipes, index)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install jsonschema
+      - uses: actions/cache@v4
+        id: stellar-xdr
+        with:
+          path: ~/.cargo/bin/stellar-xdr
+          key: stellar-xdr-30.0.0-${{ runner.os }}
+      - if: steps.stellar-xdr.outputs.cache-hit != 'true'
+        run: cargo install --locked stellar-xdr --version 30.0.0 --features cli
+      - run: python tools/validate.py --check-index
+
+  js-sdk:
+    name: js-stellar-sdk verdicts (pre-fix and fixed releases)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: python3 repro/check_js_sdk.py

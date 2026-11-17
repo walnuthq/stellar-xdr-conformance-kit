@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "cap0006-manage-buy-offer-id-above-2p53",
+  "title": "ManageBuyOffer whose offer ID is 2^53 + 1",
+  "description": "A ManageBuyOffer operation with offerID 9007199254740993, the first int64 that an IEEE-754 double cannot hold. Decoding is not the problem; building the operation is. An SDK that accepts the ID as a floating-point number encodes 9007199254740992, a different offer, without an error.",
+  "status": "active",
+  "kind": "value",
+  "synthetic": true,
+  "added": "2026-11-17",
+  "coverage": {
+    "caps": [
+      "CAP-0006"
+    ],
+    "protocol": {
+      "min": 11
+    },
+    "shapes": [
+      {
+        "path": "ManageBuyOfferOp.offerID",
+        "coreValidation": "partially-validated",
+        "note": "int64. Core treats 0 as 'create' and looks any other ID up; a negative ID is rejected. To be confirmed against core source for the guide."
+      }
+    ],
+    "rootCauses": [
+      "integer-domain",
+      "encode-decode-asymmetry"
+    ]
+  },
+  "provenance": {
+    "source": "synthetic",
+    "method": "Encoded from XDR-JSON with the stellar-xdr CLI.",
+    "generator": {
+      "path": "generator/recipes/cap0006-manage-buy-offer-id-above-2p53.json",
+      "command": "stellar-xdr encode --type Operation --input json --output single < generator/recipes/cap0006-manage-buy-offer-id-above-2p53.json"
+    },
+    "coreCanEmit": "unverified",
+    "rationale": "Hand-built because it is a bare Operation. The operation is well-formed, so we expect core to include it in a ledger (the envelope side) even though no offer with this ID exists and the operation would fail; this has not been run against core. Offer IDs on the public networks are far below 2^53 today."
+  },
+  "payloads": [
+    {
+      "name": "value",
+      "role": "primary",
+      "xdrType": "Operation",
+      "file": "value.xdr",
+      "sha256": "187f2e161ca57229623a33b06ca58a8280556c4bbadc62e313f2b27724ba5af3",
+      "bytes": 80
+    }
+  ],
+  "expect": {
+    "roundTrip": {
+      "reference": "rs-stellar-xdr",
+      "version": "30.0.0"
+    },
+    "decoded": [
+      {
+        "pointer": "/body/manage_buy_offer/offer_id",
+        "equals": "9007199254740993",
+        "why": "XDR-JSON carries int64 as a string, so the value is exact."
+      }
+    ],
+    "operations": [
+      {
+        "op": "offer-id-from-decimal-string",
+        "args": {
+          "offerId": "9007199254740993"
+        },
+        "outcomes": [
+          {
+            "xdrHex": "000000000000000c00000000000000015553440000000000616795a5271a31fca731b10453e3660333890ad00094a541607567d8de7e6a93000000000098968000000001000000010020000000000001"
+          }
+        ],
+        "why": "Control: rebuilding the operation with the ID as a decimal string must give the payload's bytes."
+      },
+      {
+        "op": "offer-id-from-float",
+        "args": {
+          "offerId": "9007199254740993"
+        },
+        "outcomes": [
+          {
+            "xdrHex": "000000000000000c00000000000000015553440000000000616795a5271a31fca731b10453e3660333890ad00094a541607567d8de7e6a93000000000098968000000001000000010020000000000001"
+          },
+          {
+            "error": true
+          }
+        ],
+        "why": "Rebuilding with the ID as the language's floating-point number must give the same bytes or fail. Encoding …0020000000000000 (2^53) is the wrong answer."
+      },
+      {
+        "op": "offer-id-from-decimal-string",
+        "args": {
+          "offerId": ""
+        },
+        "outcomes": [
+          {
+            "error": true
+          }
+        ],
+        "why": "An empty string is not an ID; reading it as 0 turns an update into 'create a new offer'."
+      },
+      {
+        "op": "offer-id-from-decimal-string",
+        "args": {
+          "offerId": "-1"
+        },
+        "outcomes": [
+          {
+            "error": true
+          }
+        ],
+        "why": "A negative offer ID is rejected by the network."
+      },
+      {
+        "op": "offer-id-from-decimal-string",
+        "args": {
+          "offerId": "0x10"
+        },
+        "outcomes": [
+          {
+            "error": true
+          }
+        ],
+        "why": "Only canonical decimal digits are an ID."
+      }
+    ]
+  },
+  "sightings": [
+    {
+      "url": "https://github.com/stellar/js-stellar-sdk/issues/1785",
+      "component": "stellar/js-stellar-sdk",
+      "relation": "reproduces",
+      "failure": "wrong-value",
+      "preFix": {
+        "ref": "v17.2.1",
+        "verdict": "diverged"
+      },
+      "postFix": {
+        "ref": "v17.3.0",
+        "verdict": "pass"
+      }
+    }
+  ],
+  "notes": "Both verdicts were measured on 2026-11-17 with the published npm packages (repro/README.md)."
+}

@@ -1,0 +1,174 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "cap0027-muxed-source-on-soroban-ttl-op",
+  "title": "ExtendFootprintTTL whose operation source is a muxed account",
+  "description": "A successful ExtendFootprintTTL operation whose operation source is an M… address with mux ID 1234567890123456789; the transaction source is the same account in G… form. The envelope names the muxed form; the meta only ever shows the base G… account changing. A reader that seeds participants from the envelope records an M… participant that is not an account, or cuts it to 32 bytes.",
+  "status": "active",
+  "kind": "ledger",
+  "synthetic": false,
+  "added": "2026-11-17",
+  "coverage": {
+    "caps": [
+      "CAP-0027",
+      "CAP-0046"
+    ],
+    "protocol": {
+      "min": 20
+    },
+    "shapes": [
+      {
+        "path": "Operation.sourceAccount",
+        "coreValidation": "partially-validated",
+        "note": "Core checks the base account and its signatures; the 64-bit mux ID is passed through. wallet-backend#753 states core rejects a muxed source only on InvokeHostFunction from protocol 25."
+      },
+      {
+        "path": "MuxedAccount.med25519",
+        "coreValidation": "unvalidated",
+        "note": "The id field."
+      },
+      {
+        "path": "ExtendFootprintTTLOp",
+        "coreValidation": "validated"
+      }
+    ],
+    "rootCauses": [
+      "participants-from-envelope",
+      "address-width"
+    ]
+  },
+  "provenance": {
+    "source": "local-core",
+    "core": {
+      "version": "30.0.0",
+      "image": "stellar/quickstart@sha256:a61ce821add98adb4f3e3d6e757b2615dd169a2b39c7e30cd47cfa95074f97d9"
+    },
+    "protocolVersion": 28,
+    "networkPassphrase": "Standalone Network ; February 2017",
+    "generator": {
+      "path": "generator/muxed_soroban_source.mjs",
+      "command": "docker run -d -p 127.0.0.1:18000:8000 stellar/quickstart --local --protocol-version 28 --enable core,rpc; node generator/muxed_soroban_source.mjs SDK_DIR http://127.0.0.1:18000/rpc OUT_DIR"
+    }
+  },
+  "payloads": [
+    {
+      "name": "ledger",
+      "role": "primary",
+      "xdrType": "LedgerCloseMeta",
+      "file": "ledger.xdr",
+      "sha256": "baa613710a2a9a219102de855d2760b06476e37ce9980610e13f3fc1f53933cb",
+      "bytes": 2284
+    }
+  ],
+  "ledger": {
+    "sequence": 30,
+    "protocolVersion": 28,
+    "closeTime": 1794933015,
+    "hash": "ec51cac92272f426ca681d2948c888be46e41b9cb9ccaa60ff265268f9d45948",
+    "networkPassphrase": "Standalone Network ; February 2017",
+    "lcmVersion": 2
+  },
+  "focus": {
+    "txIndex": 0,
+    "txHash": "df9b1bfb767b3d5ec9860a025df4e992e9b16c699ae4017b99a0f2938f93b8b9",
+    "opIndex": 0
+  },
+  "expect": {
+    "roundTrip": {
+      "reference": "rs-stellar-xdr",
+      "version": "30.0.0"
+    },
+    "decoded": [
+      {
+        "pointer": "/v2/ledger_header/header/ledger_version",
+        "equals": 28
+      },
+      {
+        "pointer": "/v2/tx_processing",
+        "length": 1
+      },
+      {
+        "pointer": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/source_account",
+        "equals": "MB4M3CF26RDRP62CWAT4YHUCYJPPMTMOFMYWRPHBL5HGN2V7V2LF6EJCCD2H32MBCWWQG",
+        "why": "The operation source in the envelope is muxed."
+      },
+      {
+        "pointer": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/source_account",
+        "equals": "GB4M3CF26RDRP62CWAT4YHUCYJPPMTMOFMYWRPHBL5HGN2V7V2LF65KQ",
+        "why": "The transaction source is the plain account."
+      },
+      {
+        "pointer": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/extend_footprint_ttl/extend_to",
+        "equals": 200000
+      },
+      {
+        "pointer": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/extend_footprint_ttl",
+        "equals": "success",
+        "why": "Core applied it: a muxed source on this operation is valid at protocol 28."
+      },
+      {
+        "pointer": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "length": 2
+      },
+      {
+        "pointer": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes/1/updated/data/ttl/live_until_ledger_seq",
+        "equals": 200030
+      },
+      {
+        "pointer": "/v2/tx_processing/0/fee_processing/1/updated/data/account/account_id",
+        "equals": "GB4M3CF26RDRP62CWAT4YHUCYJPPMTMOFMYWRPHBL5HGN2V7V2LF65KQ",
+        "why": "The only account the meta shows changing is the G… account."
+      }
+    ],
+    "participants": {
+      "addresses": [
+        "GB4M3CF26RDRP62CWAT4YHUCYJPPMTMOFMYWRPHBL5HGN2V7V2LF65KQ"
+      ],
+      "envelopeOnly": [
+        "MB4M3CF26RDRP62CWAT4YHUCYJPPMTMOFMYWRPHBL5HGN2V7V2LF6EJCCD2H32MBCWWQG"
+      ]
+    },
+    "ledgerChanges": [
+      {
+        "opIndex": 0,
+        "entryType": "ttl",
+        "change": "updated",
+        "key": {
+          "ttl": {
+            "key_hash": "71d622c3c6add6e2586bbdcfddb2fa6c259b42cdd9d6d538a148d628216876a1"
+          }
+        }
+      }
+    ]
+  },
+  "sightings": [
+    {
+      "url": "https://github.com/stellar/wallet-backend/pull/753",
+      "component": "stellar/wallet-backend",
+      "relation": "reproduces",
+      "failure": "halt",
+      "preFix": {
+        "ref": "f8e5786d22c0",
+        "verdict": "mishandled"
+      },
+      "postFix": {
+        "ref": "bb0b162b0725",
+        "verdict": "pass"
+      }
+    },
+    {
+      "url": "https://github.com/stellar/wallet-backend/issues/716",
+      "component": "stellar/wallet-backend",
+      "relation": "reproduces",
+      "failure": "wrong-value",
+      "preFix": {
+        "ref": "79ea2acd1dc6",
+        "verdict": "mishandled"
+      },
+      "postFix": {
+        "ref": "bb0b162b0725",
+        "verdict": "pass"
+      }
+    }
+  ],
+  "notes": "Generated on 2026-11-17 against stellar/quickstart (core v30.0.0) held at protocol 28, so the header uses the SIGNED StellarValue arm that the pre-fix wallet-backend commits decode. The funding account is the network root account and the test account's seed is sha256(\"xdr-corpus muxed-soroban-source\"); no external keys. Soroban resources were set by hand because the quickstart RPC failed to simulate at protocol 28. js-stellar-sdk 17.3.0 refuses to build a Soroban operation with a muxed source, so the recipe sets the source on the envelope before signing. The bytes are not reproducible (close time, ledger number); the shape is. This payload is from the second run of the recipe, on a fresh network (run record: repro/evidence/gen-muxed-soroban-source.recipe-run.json); the first run gave a ledger of the same size and shape at sequence 102. All four verdicts were measured the same day (repro/README.md): at 79ea2acd1dc6 the ledger is ingested with two participant rows, the G… key and an M-prefixed 32-byte key that is not a valid address (#716); at f8e5786d22c0 ingestion halts on a duplicate key in transactions_accounts (#753); at bb0b162b0725 only the G… account is stored."
+}

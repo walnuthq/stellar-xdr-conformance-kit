@@ -1,0 +1,527 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:walnut:xdr-corpus:entry:0.1",
+  "title": "XDR/CAP-coverage corpus entry manifest",
+  "description": "One file per corpus entry (corpus/entries/<id>/entry.json). Describes one rare ledger or XDR shape: where its bytes came from, which CAP and protocol introduced it, what a correct reader must produce, and which public bugs it reproduces. Draft 0.1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "title", "status", "kind", "synthetic", "coverage", "provenance"],
+  "properties": {
+    "schemaVersion": {
+      "description": "Version of this schema the entry was written against (MAJOR.MINOR.PATCH). Readers reject an unknown MAJOR and ignore unknown keys starting with 'x-'.",
+      "type": "string",
+      "pattern": "^0\\.1\\.[0-9]+$"
+    },
+    "id": {
+      "description": "Stable entry ID, also the entry's directory name. Never reused or renamed once status is 'active'. Convention: cap<NNNN>-<shape>.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "maxLength": 80
+    },
+    "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "description": { "type": "string" },
+    "status": {
+      "description": "'planned' entries reserve an ID and document a coverage gap; they may have no payload yet. 'retired' entries stay in the corpus so IDs remain stable.",
+      "enum": ["planned", "active", "retired"]
+    },
+    "kind": {
+      "description": "'ledger': the primary payload is one LedgerCloseMeta, replayable through the harness. 'value': the primary payload is any other single XDR value, for SDK conformance.",
+      "enum": ["ledger", "value"]
+    },
+    "synthetic": {
+      "description": "True if and only if the bytes were not produced by stellar-core (provenance.source is 'synthetic').",
+      "type": "boolean"
+    },
+    "added": { "description": "Date the entry was added (ISO 8601).", "type": "string", "format": "date" },
+    "license": {
+      "description": "SPDX identifier for the entry's files when it differs from the corpus default (Apache-2.0).",
+      "type": "string"
+    },
+    "notes": { "type": "string" },
+    "coverage": { "$ref": "#/$defs/coverage" },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "payloads": {
+      "description": "Files of the entry. Exactly one has role 'primary'.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/payload" },
+      "minItems": 1,
+      "contains": { "type": "object", "required": ["role"], "properties": { "role": { "const": "primary" } } },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "ledger": { "$ref": "#/$defs/ledger" },
+    "focus": { "$ref": "#/$defs/focus" },
+    "expect": { "$ref": "#/$defs/expect" },
+    "sightings": {
+      "description": "Public bugs this entry reproduces or covers.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/sighting" }
+    }
+  },
+  "patternProperties": { "^x-": {} },
+  "allOf": [
+    {
+      "description": "The synthetic flag and the provenance source must agree.",
+      "if": { "properties": { "synthetic": { "const": true } } },
+      "then": { "properties": { "provenance": { "properties": { "source": { "const": "synthetic" } } } } },
+      "else": { "properties": { "provenance": { "properties": { "source": { "enum": ["network", "local-core"] } } } } }
+    },
+    {
+      "description": "Anything that is not merely planned has bytes and expectations.",
+      "if": { "properties": { "status": { "const": "planned" } } },
+      "else": { "required": ["payloads", "expect", "added"] }
+    },
+    {
+      "description": "Ledger entries carry the header facts the replay harness needs, and their primary payload is a LedgerCloseMeta.",
+      "if": { "properties": { "kind": { "const": "ledger" }, "status": { "enum": ["active", "retired"] } } },
+      "then": {
+        "required": ["ledger"],
+        "properties": {
+          "payloads": {
+            "contains": {
+              "type": "object",
+              "properties": { "role": { "const": "primary" }, "xdrType": { "const": "LedgerCloseMeta" } },
+              "required": ["role", "xdrType"]
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "Ledger facts only make sense for ledger entries.",
+      "if": { "properties": { "kind": { "const": "value" } } },
+      "then": { "properties": { "ledger": false, "focus": false } }
+    },
+    {
+      "description": "Participants and ledger changes are stated for one transaction, so the entry must say which.",
+      "if": {
+        "required": ["expect"],
+        "properties": { "expect": { "anyOf": [{ "required": ["participants"] }, { "required": ["ledgerChanges"] }] } }
+      },
+      "then": { "required": ["focus"] }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "capTag": {
+      "description": "CAP identifier as in stellar-protocol file names: CAP-0040, CAP-0046-11.",
+      "type": "string",
+      "pattern": "^CAP-[0-9]{4}(-[0-9]{2})?$"
+    },
+    "protocolVersion": { "type": "integer", "minimum": 1 },
+    "relativePath": {
+      "description": "POSIX path relative to the entry directory; no '..' segments.",
+      "type": "string",
+      "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$))[A-Za-z0-9._/-]+$"
+    },
+    "rootCause": {
+      "enum": [
+        "unvalidated-passthrough",
+        "participants-from-envelope",
+        "address-width",
+        "meta-only-change",
+        "canonical-order",
+        "lossy-conversion",
+        "integer-domain",
+        "unbounded-resource",
+        "unknown-arm",
+        "encode-decode-asymmetry"
+      ]
+    },
+    "verdict": {
+      "description": "Harness verdicts are pass, mishandled, dropped (RFP wording). The conformance runner adds diverged and skipped.",
+      "enum": ["pass", "mishandled", "dropped", "diverged", "skipped"]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["caps", "protocol", "shapes"],
+      "properties": {
+        "caps": {
+          "description": "CAPs that introduced or changed the shape. Empty only for shapes that predate the CAP process (protocol.min below 10).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/capTag" },
+          "uniqueItems": true
+        },
+        "protocol": {
+          "description": "Range of protocol versions in which stellar-core can emit this shape. 'max' is omitted while the shape is still valid.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min"],
+          "properties": {
+            "min": { "$ref": "#/$defs/protocolVersion" },
+            "max": { "$ref": "#/$defs/protocolVersion" }
+          }
+        },
+        "shapes": {
+          "description": "XDR types, fields and union arms the entry exercises, named as in the stellar-xdr .x files. This list is what the hardening guide's field-by-field table is checked against.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "coreValidation"],
+            "properties": {
+              "path": {
+                "description": "Type, then field or arm names separated by dots: SignerKey.ed25519SignedPayload, Memo.text, Operation.sourceAccount.",
+                "type": "string",
+                "pattern": "^[A-Z][A-Za-z0-9]*(\\.[A-Za-z][A-Za-z0-9_]*)*$"
+              },
+              "coreValidation": {
+                "description": "What stellar-core does with this field when it arrives in a transaction. 'core-produced' is for meta and ledger entries that core writes itself. 'to-verify' is allowed in drafts only.",
+                "enum": ["validated", "partially-validated", "unvalidated", "core-produced", "to-verify"]
+              },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "rootCauses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/rootCause" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "role", "xdrType", "file", "sha256", "bytes"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "role": { "enum": ["primary", "auxiliary"] },
+        "xdrType": {
+          "description": "Top-level XDR type name as in the .x files and the rs-stellar-xdr type list.",
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]*$"
+        },
+        "file": {
+          "description": "Raw XDR binary of exactly one value: no base64, no framing, no compression.",
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": { "description": "SHA-256 of the raw bytes of 'file'.", "$ref": "#/$defs/sha256" },
+        "bytes": { "description": "Length of 'file' in bytes.", "type": "integer", "minimum": 0 },
+        "json": {
+          "description": "Optional XDR-JSON (SEP-51) rendering produced by the reference tool. Informative: the binary is authoritative.",
+          "$ref": "#/$defs/relativePath"
+        }
+      }
+    },
+    "ledger": {
+      "description": "Facts the replay harness needs to serve the ledger without decoding XDR while indexing. Each is also asserted against the decoded payload when the corpus is built.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "protocolVersion", "closeTime", "hash", "networkPassphrase", "lcmVersion"],
+      "properties": {
+        "sequence": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "protocolVersion": {
+          "description": "ledgerVersion of the header: the protocol the bytes were produced under. A target whose XDR is older than this cannot decode the entry.",
+          "$ref": "#/$defs/protocolVersion"
+        },
+        "closeTime": { "description": "Close time in seconds since the Unix epoch.", "type": "integer", "minimum": 0 },
+        "hash": { "description": "Ledger header hash, hex.", "$ref": "#/$defs/sha256" },
+        "networkPassphrase": { "type": "string", "minLength": 1 },
+        "lcmVersion": { "description": "LedgerCloseMeta union arm.", "enum": [0, 1, 2] }
+      }
+    },
+    "focus": {
+      "description": "The transaction (and operation) inside the ledger that carries the shape. Indexes are positions in txProcessing, i.e. apply order.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["txIndex", "txHash"],
+      "properties": {
+        "txIndex": { "type": "integer", "minimum": 0 },
+        "txHash": { "$ref": "#/$defs/sha256" },
+        "opIndex": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path"],
+      "properties": {
+        "path": { "description": "Generator recipe or script, relative to the corpus repository root.", "type": "string", "minLength": 1 },
+        "command": { "description": "Exact command line that reproduces the bytes.", "type": "string" },
+        "seed": { "type": "integer" }
+      }
+    },
+    "provenance": {
+      "oneOf": [
+        { "$ref": "#/$defs/provenanceNetwork" },
+        { "$ref": "#/$defs/provenanceLocalCore" },
+        { "$ref": "#/$defs/provenanceSynthetic" }
+      ]
+    },
+    "provenanceNetwork": {
+      "description": "Captured from testnet or pubnet history.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "network", "networkPassphrase", "ledgerSequence", "retrievedFrom", "retrievedAt"],
+      "properties": {
+        "source": { "const": "network" },
+        "network": { "enum": ["testnet", "pubnet"] },
+        "networkPassphrase": { "type": "string", "minLength": 1 },
+        "networkEpoch": {
+          "description": "Testnet only: identifies the testnet instance, since testnet is reset and ledger numbers repeat. The date prefix of the public data lake is used.",
+          "type": "string"
+        },
+        "ledgerSequence": { "type": "integer", "minimum": 1 },
+        "txHash": { "$ref": "#/$defs/sha256" },
+        "retrievedFrom": { "description": "URL of the object or endpoint the bytes were read from.", "type": "string", "format": "uri" },
+        "retrievedAt": { "type": "string", "format": "date" },
+        "containerSha256": {
+          "description": "SHA-256 of the decompressed container (e.g. LedgerCloseMetaBatch) the payload was cut from.",
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "provenanceLocalCore": {
+      "description": "Produced by a stellar-core we ran or by stellar-core's own test suite (the --check-lcm goldens). At least one of 'generator' and 'golden' is present.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "core", "protocolVersion", "networkPassphrase"],
+      "anyOf": [{ "required": ["generator"] }, { "required": ["golden"] }],
+      "properties": {
+        "source": { "const": "local-core" },
+        "core": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "version": { "description": "stellar-core release, e.g. 30.0.0.", "type": "string" },
+            "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+            "image": { "description": "Container image with digest, e.g. stellar/quickstart@sha256:…", "type": "string" }
+          }
+        },
+        "protocolVersion": { "$ref": "#/$defs/protocolVersion" },
+        "networkPassphrase": { "type": "string", "minLength": 1 },
+        "generator": { "$ref": "#/$defs/generator" },
+        "golden": {
+          "description": "Location of the same LedgerCloseMeta in stellar-core's checked-in golden data.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["repository", "commit", "path", "record", "relation"],
+          "properties": {
+            "repository": { "type": "string", "format": "uri" },
+            "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+            "path": { "description": "Golden file path in the repository (a stream-framed LedgerCloseMeta file).", "type": "string" },
+            "fileSha256": { "$ref": "#/$defs/sha256" },
+            "record": { "description": "1-based position of the LedgerCloseMeta in the framed stream.", "type": "integer", "minimum": 1 },
+            "section": { "description": "Test case and section names from the golden index.json.", "type": "string" },
+            "rngSeed": { "type": "integer" },
+            "relation": {
+              "description": "'copied': the payload is that record byte for byte. 'same-shape': our own core run produced the same shape; bytes differ.",
+              "enum": ["copied", "same-shape"]
+            }
+          }
+        }
+      }
+    },
+    "provenanceSynthetic": {
+      "description": "Hand-crafted or mutated XDR. Always flagged, and always says whether stellar-core could emit it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "method", "coreCanEmit", "rationale"],
+      "properties": {
+        "source": { "const": "synthetic" },
+        "method": { "description": "How the bytes were made.", "type": "string", "minLength": 1 },
+        "generator": { "$ref": "#/$defs/generator" },
+        "derivedFrom": { "description": "ID of the entry this one was mutated from.", "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "coreCanEmit": {
+          "description": "Whether a stellar-core node could put this value in a ledger. 'no' entries are kept out of the replay harness by default.",
+          "enum": ["yes", "no", "unverified"]
+        },
+        "rationale": { "description": "Why the entry is synthetic and the evidence for coreCanEmit.", "type": "string", "minLength": 1 }
+      }
+    },
+    "expect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roundTrip"],
+      "properties": {
+        "roundTrip": {
+          "description": "Every payload decodes and re-encodes to identical bytes with the reference implementation at this version. All SDKs are held to the same result.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reference", "version"],
+          "properties": {
+            "reference": { "const": "rs-stellar-xdr" },
+            "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.]+)?$" },
+            "xdrJson": {
+              "description": "False when the value falls under a documented XDR-JSON exception and only the binary round trip holds.",
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        "decoded": {
+          "description": "Expected decoded values, addressed by JSON Pointer (RFC 6901) into the XDR-JSON (SEP-51) form of a payload. 64-bit integers are strings and non-UTF-8 bytes are escaped, as SEP-51 specifies.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["pointer"],
+            "oneOf": [{ "required": ["equals"] }, { "required": ["length"] }],
+            "properties": {
+              "payload": { "description": "Payload name; defaults to the primary payload.", "type": "string" },
+              "pointer": { "type": "string", "pattern": "^(/([^/~]|~[01])*)*$" },
+              "equals": { "description": "Exact JSON value at the pointer." },
+              "length": { "description": "Length of the array at the pointer.", "type": "integer", "minimum": 0 },
+              "why": { "type": "string" }
+            }
+          }
+        },
+        "participants": {
+          "description": "Accounts and contracts the focus transaction affected, derived from its meta (fee changes, operation changes, events), never from the envelope.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["addresses"],
+          "properties": {
+            "addresses": {
+              "description": "Complete expected set, as SEP-23 strkeys in their base form (G… or C…).",
+              "type": "array",
+              "items": { "$ref": "#/$defs/strkey" },
+              "uniqueItems": true
+            },
+            "envelopeOnly": {
+              "description": "Strkeys that appear in the envelope but that the meta does not show as affected, or that are not accounts at all (M… and P… forms). A reader that reports one of these as a participant is trusting the envelope.",
+              "type": "array",
+              "items": { "$ref": "#/$defs/strkey" },
+              "uniqueItems": true
+            }
+          }
+        },
+        "ledgerChanges": {
+          "description": "What core changed in the focus transaction, as the meta records it. An adapter maps each to the target's own model (state change, effect, row) and reports 'dropped' when nothing corresponds.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["entryType", "change", "key"],
+            "properties": {
+              "opIndex": { "description": "Operation index; omitted for transaction-level changes.", "type": "integer", "minimum": 0 },
+              "entryType": {
+                "enum": ["account", "trustline", "offer", "data", "claimable_balance", "liquidity_pool", "contract_data", "contract_code", "config_setting", "ttl"]
+              },
+              "change": { "enum": ["created", "updated", "removed", "restored"] },
+              "key": { "description": "The LedgerKey in XDR-JSON form.", "type": "object" }
+            }
+          }
+        },
+        "limits": {
+          "description": "Measured size of the entry's recursive and variable-length structure. The harness uses these to assert bounded memory; the guide uses them to justify recommended caps.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "maxDepth": { "description": "Deepest nesting of any recursive type (SorobanAuthorizedInvocation, SCVal, ClaimPredicate, …).", "type": "integer", "minimum": 0 },
+            "maxVectorLength": { "type": "integer", "minimum": 0 },
+            "vectorsAtMaximum": {
+              "description": "Shape paths of bounded vectors that are at their declared maximum length.",
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "peakMemoryBytes": { "description": "Upper bound a reader should stay under while processing this entry.", "type": "integer", "minimum": 0 }
+          }
+        },
+        "operations": {
+          "description": "Named, language-neutral SDK operation checks for defects that decoding alone does not show. Each SDK runner implements the operations it supports; an unimplemented one is reported as 'skipped'.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["op", "outcomes"],
+            "properties": {
+              "op": { "description": "Operation name from the runner's catalogue, e.g. scval-to-native, asset-order, muxed-id-parse.", "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+              "args": { "description": "Inputs besides the payload.", "type": "object" },
+              "outcomes": {
+                "description": "Acceptable results; the check passes if the SDK produces any one of them.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "minProperties": 1,
+                  "maxProperties": 1,
+                  "properties": {
+                    "error": { "description": "The SDK refuses with an error.", "const": true },
+                    "value": { "description": "The SDK returns exactly this language-neutral JSON value." },
+                    "xdrHex": { "description": "The SDK produces exactly these XDR bytes.", "type": "string", "pattern": "^([0-9a-f]{2})*$" },
+                    "invariant": {
+                      "description": "A named property of the result holds.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["name", "equals"],
+                      "properties": { "name": { "type": "string" }, "equals": {} }
+                    }
+                  }
+                }
+              },
+              "why": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "strkey": {
+      "description": "SEP-23 strkey: G account, M muxed account, C contract, P signed payload, T pre-auth tx, X hash-x, B claimable balance, L liquidity pool.",
+      "type": "string",
+      "pattern": "^[GMCPTXBL][A-Z2-7]{55,164}$"
+    },
+    "sighting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "component", "relation"],
+      "properties": {
+        "url": { "type": "string", "format": "uri", "pattern": "^https://github\\.com/[^/]+/[^/]+/(issues|pull)/[0-9]+$" },
+        "component": { "description": "Repository the defect is in, owner/name.", "type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$" },
+        "relation": {
+          "description": "'reproduces': the entry fails on preFix and passes on postFix. 'covers': the entry exercises the same shape; no verdict pair is claimed. 'sibling': an issue we filed in another component from this entry.",
+          "enum": ["reproduces", "covers", "sibling"]
+        },
+        "failure": {
+          "enum": ["halt", "crash", "silent-drop", "wrong-value", "rejects-valid", "accepts-invalid", "resource"]
+        },
+        "preFix": { "$ref": "#/$defs/versionVerdict" },
+        "postFix": { "$ref": "#/$defs/versionVerdict" }
+      },
+      "if": { "properties": { "relation": { "const": "reproduces" } } },
+      "then": { "required": ["failure", "preFix"] }
+    },
+    "versionVerdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "verdict"],
+      "properties": {
+        "ref": { "description": "Git commit (40 or abbreviated hex) or release tag of the component.", "type": "string", "minLength": 1 },
+        "verdict": { "$ref": "#/$defs/verdict" }
+      }
+    },
+    "indexLine": {
+      "description": "One line of corpus/index.jsonl, generated from the entry manifests. The harness and runners stream this file and open an entry only when it matches their filter.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "entry", "entrySha256", "status", "kind", "synthetic", "caps", "protocol"],
+      "properties": {
+        "id": { "type": "string" },
+        "entry": { "description": "Path of entry.json relative to the corpus root.", "type": "string" },
+        "entrySha256": { "$ref": "#/$defs/sha256" },
+        "status": { "enum": ["planned", "active", "retired"] },
+        "kind": { "enum": ["ledger", "value"] },
+        "synthetic": { "type": "boolean" },
+        "caps": { "type": "array", "items": { "$ref": "#/$defs/capTag" } },
+        "protocol": { "type": "object", "required": ["min"], "properties": { "min": { "type": "integer" }, "max": { "type": "integer" }, "captured": { "type": "integer" } } },
+        "rootCauses": { "type": "array", "items": { "$ref": "#/$defs/rootCause" } },
+        "primary": {
+          "type": "object",
+          "required": ["file", "xdrType", "sha256", "bytes"],
+          "properties": {
+            "file": { "type": "string" },
+            "xdrType": { "type": "string" },
+            "sha256": { "$ref": "#/$defs/sha256" },
+            "bytes": { "type": "integer" }
+          }
+        },
+        "ledgerSequence": { "type": "integer" }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "passphrase": "Standalone Network ; February 2017",
+  "protocolVersion": 28,
+  "account": "GB4M3CF26RDRP62CWAT4YHUCYJPPMTMOFMYWRPHBL5HGN2V7V2LF65KQ",
+  "muxedSource": "MB4M3CF26RDRP62CWAT4YHUCYJPPMTMOFMYWRPHBL5HGN2V7V2LF6EJCCD2H32MBCWWQG",
+  "muxId": "1234567890123456789",
+  "contractId": "CDMLFMKMMD7MWZP3FKUBZPVHTUEDLSX4BYGYKH4GCESXYHS3IHQ4EIG4",
+  "funded": {
+    "hash": "83114b78f5e0db33c015cba91eb0eec90e770d0f53d765ce130a94daff1fda02",
+    "ledger": 28
+  },
+  "deployed": {
+    "hash": "068e881a1bf3f8d7984d27c16635d64867d93ae76fddaa10cc8818aff3f31147",
+    "ledger": 29
+  },
+  "extend": {
+    "hash": "df9b1bfb767b3d5ec9860a025df4e992e9b16c699ae4017b99a0f2938f93b8b9",
+    "ledger": 30
+  },
+  "ledger": {
+    "sequence": 30,
+    "hash": "ec51cac92272f426ca681d2948c888be46e41b9cb9ccaa60ff265268f9d45948",
+    "closeTime": "1794933015"
+  },
+  "payload": {
+    "bytes": 2284,
+    "sha256": "baa613710a2a9a219102de855d2760b06476e37ce9980610e13f3fc1f53933cb"
+  }
+}

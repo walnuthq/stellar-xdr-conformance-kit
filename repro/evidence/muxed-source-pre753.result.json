@@ -1,0 +1,16 @@
+{
+  "entry": "cap0027-muxed-source-on-soroban-ttl-op",
+  "target": "stellar/wallet-backend",
+  "label": "muxed-source-pre753",
+  "ledger": 30,
+  "verdict": "mishandled",
+  "ingestExit": "2",
+  "checks": [
+    {
+      "check": "ingested",
+      "verdict": "mishandled",
+      "cursorAfter": 29,
+      "ledger": 30
+    }
+  ]
+}
