@@ -9,6 +9,7 @@ This repository is the **prototype** behind [Walnut](https://www.walnut.dev)'s p
 - **A manifest schema** for corpus entries ([`schema/manifest.schema.json`](schema/manifest.schema.json), explained in [`docs/manifest-schema.md`](docs/manifest-schema.md)). One manifest per entry plus a generated, streamable [`corpus/index.jsonl`](corpus/index.jsonl).
 - **Ten corpus entries** ([`corpus/entries/`](corpus/entries/)): raw XDR plus a manifest with provenance, CAP and protocol tags, and what a correct reader must produce. Four are whole ledgers (`LedgerCloseMeta`), six are single XDR values for SDK checks.
 - **Reproductions** of public bugs from those entries ([`repro/`](repro/README.md)), with scripts, logs and limits.
+- **The architecture** of the full kit (corpus, generator, replay harness, SDK conformance runner, linter, guide), with diagrams: [`docs/architecture.md`](docs/architecture.md).
 - **A catalogue** of the 18 sightings the RFP lists, with XDR types, CAPs, root causes and fix commits ([`docs/bug-catalogue.md`](docs/bug-catalogue.md)).
 
 ## Results
@@ -70,12 +71,12 @@ corpus/entries/<id>/            entry.json and the raw XDR payload
 generator/                      recipes that produced the entries
 tools/validate.py               corpus validator
 repro/                          replay harness, SDK runner, evidence
-docs/                           schema explanation, bug catalogue, design notes
+docs/                           architecture, schema explanation, bug catalogue, design notes
 ```
 
 ## Status
 
-A prototype, not a release. The schema is version 0.1 and may change. What the full project would add is described in the RFP: a larger corpus tagged per CAP, a generator, a Galexie-layout replay path, Go and Rust SDK runners, a linter and a hardening guide. Known gaps and open questions are in [`docs/design-notes.md`](docs/design-notes.md).
+A prototype, not a release. The schema is version 0.1 and may change. What the full project would add is described in the RFP and designed in [`docs/architecture.md`](docs/architecture.md): a larger corpus tagged per CAP, a generator, a Galexie-layout replay path, Go and Rust SDK runners, a linter and a hardening guide. Known gaps and open questions are in [`docs/design-notes.md`](docs/design-notes.md).
 
 ## License
 
