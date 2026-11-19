@@ -129,7 +129,7 @@ Built on Go's standard `go/analysis` framework, so it runs in `go vet`, golangci
 | XCK002 Missing caps | Recursion over auth trees or nested `ScVal`s without depth or size limits |
 | XCK003 Participants from envelope | Affected accounts derived from the envelope instead of the ledger meta |
 
-Rule IDs match the manifest's root-cause tags. The linter flags every seeded violation in its test suite and runs clean on current wallet-backend.
+Each rule maps to a root-cause tag in the manifest (`unvalidated-passthrough`, `unbounded-resource`, `participants-from-envelope`). The linter flags every seeded violation in its test suite, with no false positives on current wallet-backend.
 
 ## 7. Indexer-hardening guide
 
@@ -148,8 +148,8 @@ Rule IDs match the manifest's root-cause tags. The linter flags every seeded vio
 - **CI**: schema checks, round trips and SDK checks run on every pull request in minutes. Ledger replays run on pull requests that touch them, and nightly in full.
 - **Monitoring plan**: the nightly job runs the corpus against the main branches of wallet-backend and the three SDKs, and opens an issue when a verdict regresses.
 - **Security**: the kit parses hostile XDR by design, so targets run in containers with resource limits. Dependencies and CI actions are pinned, and releases are signed. The full STRIDE threat model is a Tranche #2 deliverable.
-- **Stellar stack**: built against the current stable releases (protocol 30, rs-stellar-xdr 30, current SDKs).
-- **Maintenance**: Walnut maintains the kit for 12 months after delivery. When a protocol upgrade ships, new CAPs get planned entries, shapes are regenerated at the new protocol, and a release follows within 4 weeks of the upgrade reaching testnet. After that, the corpus is plain files that SDK and indexer teams can keep extending.
+- **Stellar stack**: built against the latest stable releases (stellar-core and rs-stellar-xdr 30.0.0, current SDKs).
+- **Maintenance**: Walnut maintains the kit for 12 months after delivery. When a protocol upgrade ships, new CAPs get planned entries, shapes are regenerated at the new protocol, and a new release supports it. After that, the corpus is plain files that SDK and indexer teams can keep extending.
 
 ## 10. Decentralization, license and community
 
